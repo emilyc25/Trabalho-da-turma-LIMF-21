@@ -9,4 +9,5 @@ else:
     print(f"{y} é menor que {x}")
   else:
     if x==y:
+
       print(f"{x} é igual a {y}")
