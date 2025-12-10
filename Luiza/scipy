@@ -7,3 +7,4 @@ x = linalg.solve(a, b)
 print(x)  
 print("\n Verificando os resultados, os valores devem ser zeros")  
 print(a.dot(x) - b)  
+
