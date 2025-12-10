@@ -1,0 +1,83 @@
+# Resolvendo equações lineares
+import numpy as np  
+from scipy import linalg    
+a = np.array([[2, 1], [4,-5]])  
+b = np.array([[5], [7]])  
+x = linalg.solve(a, b) 
+print(x)  
+print("\n Verificando os resultados, os valores devem ser zeros")  
+print(a.dot(x) - b)  
+
+
+
+# Encontrando determinante de matriz
+from scipy import linalg
+import numpy as np
+mat = np.array([[1,2,3],[3,4,5],[7,8,6]])
+x = linalg.det(mat) 
+print(f'Determinante da matriz\n{mat} \n é {x}')
+
+
+# Como encontrar os autovalores e os autovetores da matriz:
+from scipy import linalg
+import numpy as np
+mat = np.array([[3,2,7],[1,3,0],[4,6,8]]) 
+valores, vetores = linalg.eig(mat)
+print("Autovalores:",valores)
+print("Autovetores:\n",vetores)
+
+# Integral simples
+from scipy import integrate
+f= lambda x:x**3
+integ = integrate.quad(f, 0, 10)
+print("O valor da integral é:",integ)
+
+# Encontre a raiz da equação x + cos(x)
+import numpy as np
+from scipy.optimize import root
+def eqn(x):
+    return x + np.cos(x)
+myroot = root(eqn, 0)
+print(myroot.x)
+
+
+#Exemplo estatistico
+from scipy import stats
+notas_str = input("Digite as notas dos alunos separadas por vírgula: ")
+notas = [float(n.strip()) for n in notas_str.split(",")]
+resumo = stats.describe(notas)
+print(f"Quantidade de alunos: {resumo.nobs}")
+print(f"Mínimo: {resumo.minmax[0]:.2f}")
+print(f"Máximo: {resumo.minmax[1]:.2f}")
+print(f"Média: {resumo.mean:.2f}")
+print(f"Variância: {resumo.variance:.3f}")
+print(f"Desvio padrão: {resumo.variance ** 0.5:.3f}")
+
+
+# contante
+from scipy import constants
+print(constants.litre)
+
+# tipos de contantes
+from scipy import constants
+print(dir(constants))
+
+# Criar triangulação dados os pontos
+import numpy as np
+from scipy.spatial import Delaunay
+import matplotlib.pyplot as plt
+
+points = np.array([
+  [2, 4],
+  [3, 4],
+  [3, 0],
+  [2, 2],
+  [4, 1]
+])
+
+simplices = Delaunay(points).simplices
+
+plt.triplot(points[:, 0], points[:, 1], simplices)
+plt.scatter(points[:, 0], points[:, 1], color='r')
+
+plt.show()
