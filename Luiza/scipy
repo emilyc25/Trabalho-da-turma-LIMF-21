@@ -8,3 +8,16 @@ print(x)
 print("\n Verificando os resultados, os valores devem ser zeros")  
 print(a.dot(x) - b)  
 
+
+# Encontre a raiz da equação x + cos(x)
+from scipy.optimize import root
+from math import cos
+
+def eqn(x):
+  return x + cos(x)
+
+myroot = root(eqn, 0)
+
+
+print(myroot.x)
+
