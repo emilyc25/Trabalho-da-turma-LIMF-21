@@ -1,0 +1,84 @@
+%matplotlib widget (em uma célula)
+
+import numpy as np
+import matplotlib.pyplot as plt
+from ipywidgets import Button, HBox, VBox
+import warnings
+
+# ====== Remover avisos da hipérbole ======
+warnings.filterwarnings("ignore")
+
+# ========================== FUNÇÕES DAS CÔNICAS =============================
+
+def plot_circulo():
+    t = np.linspace(0, 2*np.pi, 400)
+    x = np.cos(t)
+    y = np.sin(t)
+    return x, y, "Círculo", "blue"
+
+def plot_elipse():
+    t = np.linspace(0, 2*np.pi, 400)
+    a, b = 2, 1
+    x = a * np.cos(t)
+    y = b * np.sin(t)
+    return x, y, "Elipse", "green"
+
+def plot_parabola():
+    x = np.linspace(-2, 2, 400)
+    y = x**2
+    return x, y, "Parábola", "orange"
+
+def plot_hiperbole():
+    x1 = np.linspace(-3, -1.01, 200)
+    x2 = np.linspace(1.01, 3, 200)
+    y1 = np.sqrt(x1**2 - 1)
+    y2 = -np.sqrt(x1**2 - 1)
+    y3 = np.sqrt(x2**2 - 1)
+    y4 = -np.sqrt(x2**2 - 1)
+    return [x1, x2], [y1, y2, y3, y4], "Hipérbole", "red"
+
+# ========================== GRÁFICO INTERATIVO =============================
+
+fig, ax = plt.subplots(figsize=(5,5))
+
+def desenhar(func):
+    ax.clear()
+    resultado = func()
+    titulo, cor = resultado[2], resultado[3]
+
+    if titulo == "Hipérbole":
+        xs, ys = resultado[0], resultado[1]
+        ax.plot(xs[0], ys[0], color=cor)
+        ax.plot(xs[0], ys[1], color=cor)
+        ax.plot(xs[1], ys[2], color=cor)
+        ax.plot(xs[1], ys[3], color=cor)
+    else:
+        x, y = resultado[0], resultado[1]
+        ax.plot(x, y, color=cor)
+
+    ax.set_title(titulo, fontsize=14)
+    ax.axhline(0, color="gray", linewidth=0.7)
+    ax.axvline(0, color="gray", linewidth=0.7)
+    ax.set_aspect('equal', 'box')
+    ax.grid(True)
+
+    ax.legend([titulo], loc="upper right", fontsize=11)
+    fig.canvas.draw_idle()
+
+# ========================== BOTÕES =========================================
+
+b1 = Button(description=" Círculo ", button_style="primary")
+b2 = Button(description=" Elipse ", button_style="")
+b3 = Button(description=" Parábola ", button_style="warning")
+b4 = Button(description=" Hipérbole ", button_style="danger")
+
+b1.on_click(lambda x: desenhar(plot_circulo))
+b2.on_click(lambda x: desenhar(plot_elipse))
+b3.on_click(lambda x: desenhar(plot_parabola))
+b4.on_click(lambda x: desenhar(plot_hiperbole))
+
+# ======================== EXIBIÇÃO INICIAL ================================
+
+ui = HBox([b1, b2, b3, b4])
+display(VBox([ui, fig.canvas]))
+desenhar(plot_circulo)
