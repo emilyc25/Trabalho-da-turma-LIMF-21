@@ -1,0 +1,97 @@
+#####################################################################################
+from tkinter import *
+from tkinter import ttk
+root = Tk()
+frm = ttk.Frame(root, padding=10)
+frm.grid()
+ttk.Label(frm, text="Olá Mundo!").grid(column=0, row=0)
+ttk.Button(frm, text="Sair", command=root.destroy).grid(column=1, row=0)
+root.mainloop()
+
+#########################################################################################
+import math
+
+from tkinter import *
+from tkinter.messagebox import *
+class Programa2(Frame):
+    def __init__(self,master=None):
+        super().__init__(master)
+        self.master.title("Equação do 2º Grau")
+        self.master.geometry("400x200")
+        self.grid()
+
+        # Coeficiente a
+        self.lblCoefA = Label(self)
+        self.lblCoefA['text'] = 'Coeficiene a:'
+        self.lblCoefA.grid(row = 0, column = 0, stick = W)
+        self.coefA = DoubleVar()
+        self.entryCoefA = Entry(self)
+        self.entryCoefA['textvariable'] = self.coefA
+        self.entryCoefA.grid(row = 0, column = 1)
+
+        # Coeficiente b
+        self.lblCoefB = Label(self)
+        self.lblCoefB['text'] = 'Coeficiene b:'
+        self.lblCoefB.grid(row = 1, column = 0, stick = W)
+        self.coefB = DoubleVar()
+        self.entryCoefB = Entry(self)
+        self.entryCoefB['textvariable'] = self.coefB
+        self.entryCoefB.grid(row = 1, column = 1)
+
+        # Termo independente c
+        self.lblTermoC = Label(self)
+        self.lblTermoC['text'] = 'Termo independente:'
+        self.lblTermoC.grid(row = 2, column = 0, stick = W)
+        self.termoC = DoubleVar()
+        self.entryTermoC = Entry(self)
+        self.entryTermoC['textvariable'] = self.termoC
+        self.entryTermoC.grid(row = 2, column = 1)
+        
+        self.btnCalcular = Button(self)
+        self.btnCalcular['text'] = 'Calcular'
+        self.btnCalcular['command'] = self.cmdCalcular
+        self.btnCalcular.grid(row = 3, column = 0)
+        self.btnFechar = Button(self)
+        self.btnFechar['text'] = 'Sair'
+        self.btnFechar['command'] = self.master.destroy
+        self.btnFechar.grid(row = 3, column = 1)
+
+    def cmdCalcular(self):
+        delta = (self.coefB.get()**2) - (4 * self.coefA.get() * self.termoC.get())
+        if delta > 0:
+            x1 = (-self.coefB.get() + math.sqrt(delta)) / (2 * self.coefA.get())
+            x2 = (-self.coefB.get() - math.sqrt(delta)) / (2 * self.coefA.get())
+            x1 = round(x1, 2)
+            x2 = round(x2, 2)
+            showinfo('Equação do 2º Grau','Raízes reais e distintas\n\nX1 = '+str(x1)+'\nX2 = '+str(x2),parent = self)
+        elif delta == 0:
+            x = (-self.coefB.get()) / (2 * self.coefA.get())
+            x = round(x,2)
+            showinfo('Equação do 2º Grau','Raízes reais e iguais\n\nX1 e X2 = '+str(x),parent = self)
+        else:
+            showinfo('Equação do 2º Grau','Não existem raízes reais...',parent = self)
+
+Programa2().mainloop()
+
+##########################################################################################################################
+
+from tkinter import *
+from tkinter.font import Font
+
+class Programa01(Frame):
+    def __init__(self, master=None):
+        super().__init__(master)
+        self.master.title("Interface gráfica")
+        self.grid()
+
+        fonte1 = Font(family='Times New Roman', size=16, slant='italic')
+        fonte2 = Font(family='Times New Roman', size=12, slant='italic')
+
+        self.lblTexto1 = Label(self, font=fonte1, text="Seja bem vindo à disciplina de Métodos Computacionais")
+        self.lblTexto1.grid(pady=5)
+        self.lblTexto1['fg'] = 'black'
+
+        self.lblTexto2 = Label(self, font=fonte2, text="Prof. Miguel Angelo")
+        self.lblTexto2.grid(pady=5)
+        self.lblTexto2['fg'] = 'black'
+Programa01().mainloop()
