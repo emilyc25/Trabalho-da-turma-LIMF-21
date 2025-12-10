@@ -1,0 +1,74 @@
+# Gráfico dos campeões da Copa Libertadores
+
+%matplotlib widget (em uma célula)
+
+
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+
+# --- Dados de campeões por ano ---
+titulos_ano = {
+1960:'URU',1961:'URU',1962:'BRA',1963:'BRA',1964:'ARG',1965:'ARG',1966:'URU',
+1967:'ARG',1968:'ARG',1969:'ARG',1970:'ARG',1971:'URU',1972:'ARG',1973:'ARG',
+1974:'ARG',1975:'ARG',1976:'BRA',1977:'ARG',1978:'ARG',1979:'PAR',1980:'URU',
+1981:'BRA',1982:'URU',1983:'BRA',1984:'ARG',1985:'ARG',1986:'ARG',1987:'URU',
+1988:'URU',1989:'COL',1990:'PAR',1991:'CHI',1992:'BRA',1993:'BRA',1994:'ARG',
+1995:'BRA',1996:'ARG',1997:'BRA',1998:'BRA',1999:'BRA',2000:'ARG',2001:'ARG',
+2002:'PAR',2003:'ARG',2004:'COL',2005:'BRA',2006:'BRA',2007:'ARG',2008:'EQU',
+2009:'ARG',2010:'BRA',2011:'BRA',2012:'BRA',2013:'BRA',2014:'ARG',2015:'ARG',
+2016:'COL',2017:'BRA',2018:'ARG',2019:'BRA',2020:'BRA',2021:'BRA',2022:'BRA',
+2023:'BRA',2024:'BRA',2025:'BRA'
+}
+
+anos = list(range(1960, 2026))
+paises = sorted(list(set(titulos_ano.values())))
+
+# --- Acumulado discreto por país ---
+contagem = {pais:0 for pais in paises}
+historico = {pais:[0] for pais in paises}
+vitorias = {pais:[] for pais in paises}  # lista de anos de vitória para bolinhas
+
+for ano in anos:
+    campeao = titulos_ano.get(ano, None)
+    if campeao:
+        contagem[campeao] += 1
+        vitorias[campeao].append((ano, contagem[campeao]))  # salvar ano e total para bolinha
+    for pais in paises:
+        historico[pais].append(contagem[pais])
+
+# --- Cores fixas ---
+cores = {
+    'BRA':'#1E9C1A','ARG':'#1A73E8','URU':'#C9A000','PAR':'#D62B2B',
+    'COL':'#6A1B9A','CHI':'#E67E22','EQU':'#8E5B19'
+}
+
+# --- Configuração do gráfico ---
+fig, ax = plt.subplots(figsize=(12,6))
+ax.set_xlim(1960, 2025)
+ax.set_ylim(0, max(max(historico[p]) for p in paises)+2)
+ax.set_xticks(range(1960,2026,5))
+ax.set_yticks(range(0, max(max(historico[p]) for p in paises)+2, 1))
+ax.set_xlabel('Ano')
+ax.set_ylabel('Títulos acumulados')
+ax.set_title('Evolução histórica de títulos da Libertadores por país (1960–2025)')
+ax.grid(True, linestyle='--', alpha=0.5)
+
+linhas = {pais: ax.plot([], [], label=pais, color=cores[pais], linewidth=2)[0] for pais in paises}
+bolinhas = {pais: ax.plot([], [], 'o', color=cores[pais], markersize=6)[0] for pais in paises}
+
+ax.legend(title="Países campeões", loc='upper left', bbox_to_anchor=(0.01, 0.99))
+
+# --- Função de animação ---
+def animate(i):
+    for pais in paises:
+        # Linha até o ano i
+        linhas[pais].set_data([anos[0]-1]+anos[:i+1], historico[pais][:i+2])
+        # Bolinhas nos anos de vitória até o ano i
+        anos_v = [ano for ano, _ in vitorias[pais] if ano <= anos[i]]
+        titulos_v = [tot for ano, tot in vitorias[pais] if ano <= anos[i]]
+        bolinhas[pais].set_data(anos_v, titulos_v)
+    return list(linhas.values()) + list(bolinhas.values())
+
+ani = FuncAnimation(fig, animate, frames=len(anos), interval=300, blit=False, repeat=True)
+
+plt.show(
