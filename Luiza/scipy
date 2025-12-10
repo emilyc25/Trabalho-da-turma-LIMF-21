@@ -18,6 +18,6 @@ def eqn(x):
 
 myroot = root(eqn, 0)
 
-
 print(myroot.x)
+
 
