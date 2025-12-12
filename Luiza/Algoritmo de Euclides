@@ -1,0 +1,110 @@
+Algoritmo de Euclides - Chiqueirinho
+
+import tkinter as tk
+from tkinter import ttk
+
+# --- FUNÇÃO PRINCIPAL DO ALGORITMO DE EUCLIDES ---
+def calcular_mdc_euclides(a, b):
+    """
+    Prepara a lista de passos para a exibição interativa.
+    Cada passo é uma lista: [a, b, quociente, resto]
+    """
+    
+    # 1. Garante que 'a' seja o número maior inicialmente
+    if b > a:
+        a, b = b, a
+        
+    passos = []
+    
+    # Adiciona a primeira linha de contexto antes do loop começar
+    passos.append([a, b, "Primeira Divisão", 0]) 
+
+    # Loop do Algoritmo de Euclides (Versão Otimizada com Módulo)
+    while b != 0:
+        quociente = a // b  # Divisão inteira (//)
+        resto = a % b       # Resto (%)
+        
+        # Armazena o passo atual
+        passos.append([a, b, quociente, resto])
+        
+        # Prepara para a próxima iteração
+        a = b
+        b = resto
+        
+    # O MDC é o último divisor (o valor de 'a' quando 'b' se torna 0)
+    mdc = a
+    
+    # Adiciona a linha final do MDC para a interface
+    passos.append([a, 0, "MDC Final", mdc])
+    
+    return passos
+
+# --- CLASSE PARA CONSTRUIR A INTERFACE GRÁFICA ---
+class ChiqueirinhoApp:
+    def __init__(self, master, num1, num2):
+        self.master = master
+        master.title("Algoritmo de Euclides (MDC) - Interativo")
+
+        self.passos = calcular_mdc_euclides(num1, num2)
+        self.passo_atual = 0
+
+        # --- Elementos de UI ---
+        
+        # Título principal
+        self.label_titulo = ttk.Label(master, text=f"MDC({num1}, {num2})", font=("Arial", 16, "bold"))
+        self.label_titulo.pack(pady=10)
+
+        # Configuração da Tabela (TreeView no Tkinter)
+        self.tree = ttk.Treeview(master, columns=("a", "b", "quociente", "resto"), show='headings')
+        self.tree.heading("a", text="Dividendo (a)")
+        self.tree.heading("b", text="Divisor (b)")
+        self.tree.heading("quociente", text="Quociente (q)")
+        self.tree.heading("resto", text="Resto (r)")
+        
+        # Ajusta as colunas para melhor visualização
+        for col in ("a", "b", "quociente", "resto"):
+            self.tree.column(col, anchor=tk.CENTER, width=200)
+
+        self.tree.pack(padx=20, pady=5)
+        
+        # Botão para avançar o passo
+        self.botao_avancar = ttk.Button(master, text="Próximo Passo >>", command=self.avancar_passo)
+        self.botao_avancar.pack(pady=10)
+        
+        # Rótulo de Resultado
+        self.label_resultado = ttk.Label(master, text="Aguardando cálculo...", font=("Arial", 12))
+        self.label_resultado.pack(pady=5)
+        
+        # Inicia a tabela com os cabeçalhos
+        self.avancar_passo()
+
+    def avancar_passo(self):
+        """
+        Adiciona o próximo passo do cálculo à tabela (TreeView).
+        """
+        if self.passo_atual < len(self.passos):
+            a, b, quociente, resto = self.passos[self.passo_atual]
+            
+            # Formata a linha para a tabela
+            self.tree.insert("", "end", values=(a, b, quociente, resto))
+            
+            # Se for a linha final, destaca o MDC e desabilita o botão
+            if quociente == "MDC Final":
+                mdc = resto
+                self.label_resultado.config(text=f"MDC encontrado! O resultado é: {mdc}", foreground="green", font=("Arial", 14, "bold"))
+                self.botao_avancar.config(state=tk.DISABLED, text="FIM")
+                
+            self.passo_atual += 1
+        else:
+            self.botao_avancar.config(state=tk.DISABLED, text="FIM")
+
+
+# --- EXECUÇÃO DO PROGRAMA ---
+if name == "__main__":
+    # Números de Exemplo (podem ser alterados aqui)
+    NUMERO_A = int(input("Digite um número inteiro: "))
+    NUMERO_B = int(input("Digite outro número inteiro: "))
+    
+    root = tk.Tk()
+    app = ChiqueirinhoApp(root, NUMERO_A, NUMERO_B)
+    root.mainloop()
