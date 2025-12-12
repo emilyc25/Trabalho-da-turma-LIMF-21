@@ -1,0 +1,178 @@
+import tkinter as tk
+
+# ===================== CONFIGURAÇÕES =====================
+
+COR_FUNDO = "#000000"          
+COR_MOLDURA = "#f5f5f5"        
+COR_CAIXA = "#050505"          
+COR_BORDA_INTERNA = "#222222"  
+
+COR_VERMELHO_ON = "#ff3333"
+COR_AMARELO_ON = "#ffd000"
+COR_VERDE_ON = "#00ff55"
+
+COR_LUZ_OFF = "#101010"        
+
+# Tempos em segundos
+TEMPO_VERDE = 20
+TEMPO_AMARELO = 5   
+TEMPO_VERMELHO = 20
+
+LARGURA = 520
+ALTURA = 340
+
+# ===================== JANELA =====================
+
+root = tk.Tk()
+root.title("Semáforo")
+
+canvas = tk.Canvas(root, width=LARGURA, height=ALTURA,
+                   bg=COR_FUNDO, highlightthickness=0)
+canvas.pack()
+
+# ===================== MOLDURA =====================
+
+margem_placa = 10
+
+placa_x1 = margem_placa
+placa_y1 = margem_placa
+placa_x2 = LARGURA - margem_placa
+placa_y2 = ALTURA - margem_placa
+
+canvas.create_rectangle(
+    placa_x1, placa_y1, placa_x2, placa_y2,
+    outline=COR_MOLDURA, width=8
+)
+
+inner_margin = 10
+inner_x1 = placa_x1 + inner_margin
+inner_y1 = placa_y1 + inner_margin
+inner_x2 = placa_x2 - inner_margin
+inner_y2 = placa_y2 - inner_margin
+
+canvas.create_rectangle(
+    inner_x1, inner_y1, inner_x2, inner_y2,
+    fill=COR_CAIXA, outline=COR_BORDA_INTERNA, width=2
+)
+
+# ===================== SEMÁFORO (ESQUERDA) =====================
+
+sem_margin_left = 18
+sem_margin_top = 16
+sem_width = 120
+sem_height = inner_y2 - inner_y1 - 2 * sem_margin_top
+
+sem_x1 = inner_x1 + sem_margin_left
+sem_y1 = inner_y1 + sem_margin_top
+sem_x2 = sem_x1 + sem_width
+sem_y2 = sem_y1 + sem_height
+
+canvas.create_rectangle(
+    sem_x1, sem_y1, sem_x2, sem_y2,
+    fill="#020202", outline="#333333", width=2
+)
+
+raio_outer = 30
+raio_inner = 22
+margem_vertical = 14
+espaco = 22
+
+centro_x = (sem_x1 + sem_x2) / 2
+centro_vermelho_y = sem_y1 + margem_vertical + raio_outer
+centro_amarelo_y = centro_vermelho_y + 2 * raio_outer + espaco
+centro_verde_y = centro_amarelo_y + 2 * raio_outer + espaco
+
+def desenhar_luz(cx, cy):
+    canvas.create_oval(
+        cx - raio_outer, cy - raio_outer,
+        cx + raio_outer, cy + raio_outer,
+        fill="#050505", outline="#202020", width=2
+    )
+    luz = canvas.create_oval(
+        cx - raio_inner, cy - raio_inner,
+        cx + raio_inner, cy + raio_inner,
+        fill=COR_LUZ_OFF, outline="#000000", width=1
+    )
+    return luz
+
+luz_vermelha = desenhar_luz(centro_x, centro_vermelho_y)
+luz_amarela = desenhar_luz(centro_x, centro_amarelo_y)
+luz_verde   = desenhar_luz(centro_x, centro_verde_y)
+
+# ===================== PAINEL DO NÚMERO =====================
+
+painel_margin_left = 30
+painel_x1 = sem_x2 + painel_margin_left
+painel_y1 = inner_y1 + 24
+painel_x2 = inner_x2 - 24
+painel_y2 = inner_y2 - 24
+
+canvas.create_rectangle(
+    painel_x1, painel_y1, painel_x2, painel_y2,
+    fill="#030303", outline="#1a1a1a", width=2
+)
+
+painel_borda = canvas.create_rectangle(
+    painel_x1 + 4, painel_y1 + 4, painel_x2 - 4, painel_y2 - 4,
+    outline=COR_VERDE_ON, width=3
+)
+
+display_text = canvas.create_text(
+    (painel_x1 + painel_x2) / 2,
+    (painel_y1 + painel_y2) / 2,
+    text="",
+    font=("Consolas", 96, "bold"),
+    fill=COR_VERDE_ON
+)
+
+# ===================== LÓGICA =====================
+
+estado_atual = "VERDE"
+contador = TEMPO_VERDE
+
+def atualizar():
+    global estado_atual, contador
+
+    # Apaga todas as luzes
+    canvas.itemconfig(luz_vermelha, fill=COR_LUZ_OFF)
+    canvas.itemconfig(luz_amarela, fill=COR_LUZ_OFF)
+    canvas.itemconfig(luz_verde,   fill=COR_LUZ_OFF)
+
+    # -------- VERDE --------
+    if estado_atual == "VERDE":
+        canvas.itemconfig(luz_verde, fill=COR_VERDE_ON)
+        canvas.itemconfig(display_text, text=str(contador), fill=COR_VERDE_ON)
+        canvas.itemconfig(painel_borda, outline=COR_VERDE_ON)
+
+        contador -= 1
+        if contador < 0:
+            estado_atual = "AMARELO"
+            contador = TEMPO_AMARELO
+
+    # -------- AMARELO  --------
+    elif estado_atual == "AMARELO":
+        canvas.itemconfig(luz_amarela, fill=COR_AMARELO_ON)
+        canvas.itemconfig(display_text, text=str(contador), fill=COR_AMARELO_ON)
+        canvas.itemconfig(painel_borda, outline=COR_AMARELO_ON)
+
+        contador -= 1
+        if contador < 0:
+            estado_atual = "VERMELHO"
+            contador = TEMPO_VERMELHO
+
+    # -------- VERMELHO --------
+    elif estado_atual == "VERMELHO":
+        canvas.itemconfig(luz_vermelha, fill=COR_VERMELHO_ON)
+        canvas.itemconfig(display_text, text=str(contador), fill=COR_VERMELHO_ON)
+        canvas.itemconfig(painel_borda, outline=COR_VERMELHO_ON)
+
+        contador -= 1
+        if contador < 0:
+            estado_atual = "VERDE"
+            contador = TEMPO_VERDE
+
+    root.after(1000, atualizar)
+
+atualizar()
+root.mainloop()
+
