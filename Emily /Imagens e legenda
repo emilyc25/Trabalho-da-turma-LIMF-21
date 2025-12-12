@@ -1,0 +1,297 @@
+#Imagem 1
+from tkinter import *
+from PIL import Image, ImageTk   
+
+# Janela principal
+janela = Tk()
+janela.title("Logo da Ufopa")
+
+imagem = Image.open('ufopa.png')
+imagem = imagem.resize((500, 500))  
+img_tk = ImageTk.PhotoImage(imagem)
+
+label_imagem = Label(janela, image=img_tk)
+label_imagem.pack(pady=10)
+
+nome_imagem = "Logo Ufopa"
+label_nome = Label(janela, text=nome_imagem, font=("Arial", 36))
+label_nome.pack(pady=5)
+
+janela.mainloop()
+
+#Imagem 2
+from tkinter import *
+from PIL import Image, ImageTk
+
+class GIFAnimado(Label):
+    def __init__(self, master, arquivo_gif):
+        super().__init__(master)
+
+        self.frames = []
+        self.indice = 0
+
+        # Carregar todos os frames do GIF
+        gif = Image.open(arquivo_gif)
+        try:
+            while True:
+                frame = gif.copy()
+                self.frames.append(ImageTk.PhotoImage(frame))
+                gif.seek(len(self.frames))  # vai para o próximo frame
+        except EOFError:
+            pass
+
+        # Exibir primeiro frame
+        self.config(image=self.frames[0])
+        self.animar()
+
+    def animar(self):
+        # Atualiza para o próximo frame
+        self.indice = (self.indice + 1) % len(self.frames)
+        self.config(image=self.frames[self.indice])
+        self.after(80, self.animar)  # tempo entre frames (em ms)
+
+
+# JANELA PRINCIPAL
+janela = Tk()
+janela.title("Planificação Icosaedro")
+
+gif = GIFAnimado(janela, "Planificação Icosaedro.gif")
+gif.pack(pady=10)
+
+label_nome = Label(janela, text="Planificação Icosaedro", font=("Arial", 36))
+label_nome.pack()
+
+janela.mainloop()
+
+#Imagem 3
+from tkinter import *
+from PIL import Image, ImageTk
+
+class GIFAnimado(Label):
+    def __init__(self, master, arquivo_gif):
+        super().__init__(master)
+
+        self.frames = []
+        self.indice = 0
+
+        # Carregar todos os frames do GIF
+        gif = Image.open(arquivo_gif)
+        try:
+            while True:
+                frame = gif.copy()
+                self.frames.append(ImageTk.PhotoImage(frame))
+                gif.seek(len(self.frames))  
+        except EOFError:
+            pass
+
+        # Exibir primeiro frame
+        self.config(image=self.frames[0])
+        self.animar()
+
+    def animar(self):
+        # Atualiza para o próximo frame
+        self.indice = (self.indice + 1) % len(self.frames)
+        self.config(image=self.frames[self.indice])
+        self.after(80, self.animar)  
+
+
+# JANELA PRINCIPAL
+janela = Tk()
+janela.title("Planificação Octaedro")
+
+gif = GIFAnimado(janela, "Octaedro.gif")
+gif.pack(pady=10)
+
+label_nome = Label(janela, text="Planificação Octaedro", font=("Arial", 36))
+label_nome.pack()
+
+janela.mainloop()
+
+#Imagem 4
+from tkinter import *
+from PIL import Image, ImageTk   
+
+# Janela principal
+janela = Tk()
+janela.title("Bandeira do Brasil")
+
+imagem = Image.open('brasil.png')
+imagem = imagem.resize((620, 320))  
+img_tk = ImageTk.PhotoImage(imagem)
+
+label_imagem = Label(janela, image=img_tk)
+label_imagem.pack(pady=10)
+
+nome_imagem = "Bandeira do Brasil"
+label_nome = Label(janela, text=nome_imagem, font=("Arial", 36))
+label_nome.pack(pady=5)
+
+janela.mainloop()
+
+#Imagem 5
+from tkinter import *
+from PIL import Image, ImageTk  
+
+# Janela principal
+janela = Tk()
+janela.title("Bandeira do Pará")
+
+imagem = Image.open('pará.jpg')
+imagem = imagem.resize((700, 500))  
+img_tk = ImageTk.PhotoImage(imagem)
+
+label_imagem = Label(janela, image=img_tk)
+label_imagem.pack(pady=10)
+
+nome_imagem = "Bandeira do Pará"
+label_nome = Label(janela, text=nome_imagem, font=("Arial", 36))
+label_nome.pack(pady=5)
+
+janela.mainloop()
+
+#Imagem 6
+from tkinter import *
+from PIL import Image, ImageTk  
+
+# Janela principal
+janela = Tk()
+janela.title("Bandeira de Santarém")
+
+imagem = Image.open('santarem.png')
+imagem = imagem.resize((350, 200))  
+img_tk = ImageTk.PhotoImage(imagem)
+
+label_imagem = Label(janela, image=img_tk)
+label_imagem.pack(pady=10)
+
+nome_imagem = "Bandeira de Santarém"
+label_nome = Label(janela, text=nome_imagem, font=("Arial", 20))
+label_nome.pack(pady=5)
+
+janela.mainloop()
+
+#Imagem 7
+from tkinter import *
+from PIL import Image, ImageTk   
+
+# Janela principal
+janela = Tk()
+janela.title("Bola")
+
+imagem = Image.open('bola.png')
+imagem = imagem.resize((450, 450))  
+img_tk = ImageTk.PhotoImage(imagem)
+
+label_imagem = Label(janela, image=img_tk)
+label_imagem.pack(pady=10)
+
+nome_imagem = "Bola de Futebol"
+label_nome = Label(janela, text=nome_imagem, font=("Arial", 36))
+label_nome.pack(pady=5)
+
+janela.mainloop()
+
+#Imagem 8
+from tkinter import *
+from PIL import Image, ImageTk   
+
+# Janela principal
+janela = Tk()
+janela.title("vasco")
+
+imagem = Image.open('vasco.png')
+imagem = imagem.resize((320, 320))  
+img_tk = ImageTk.PhotoImage(imagem)
+
+label_imagem = Label(janela, image=img_tk)
+label_imagem.pack(pady=10)
+
+nome_imagem = "Vasco"
+label_nome = Label(janela, text=nome_imagem, font=("Arial", 36))
+label_nome.pack(pady=5)
+
+janela.mainloop()
+
+#Imagem 9
+from tkinter import *
+from PIL import Image, ImageTk   
+
+# Janela principal
+janela = Tk()
+janela.title("Pirâmide")
+
+imagem = Image.open('piramide.jpg')
+imagem = imagem.resize((500, 500))  
+img_tk = ImageTk.PhotoImage(imagem)
+
+label_imagem = Label(janela, image=img_tk)
+label_imagem.pack(pady=10)
+
+nome_imagem = "Pirâmide"
+label_nome = Label(janela, text=nome_imagem, font=("Arial", 36))
+label_nome.pack(pady=5)
+
+janela.mainloop()
+
+#Iamgem 10
+from tkinter import *
+from PIL import Image, ImageTk   
+
+# Janela principal
+janela = Tk()
+janela.title("Onça")
+
+imagem = Image.open('onca.jpg')
+imagem = imagem.resize((250, 220))  
+img_tk = ImageTk.PhotoImage(imagem)
+
+label_imagem = Label(janela, image=img_tk)
+label_imagem.pack(pady=10)
+
+nome_imagem = "Onça"
+label_nome = Label(janela, text=nome_imagem, font=("Arial", 26))
+label_nome.pack(pady=5)
+
+janela.mainloop()
+
+#Imagem 11
+from tkinter import *
+from PIL import Image, ImageTk   
+
+# Janela principal
+janela = Tk()
+janela.title("Anjo")
+
+imagem = Image.open('anjo.jpg')
+imagem = imagem.resize((450, 450))  
+img_tk = ImageTk.PhotoImage(imagem)
+
+label_imagem = Label(janela, image=img_tk)
+label_imagem.pack(pady=10)
+
+nome_imagem = "Anjo"
+label_nome = Label(janela, text=nome_imagem, font=("Arial", 36))
+label_nome.pack(pady=5)
+
+janela.mainloop()
+
+#Imagem 12
+from tkinter import *
+from PIL import Image, ImageTk   
+
+# Janela principal
+janela = Tk()
+janela.title("Natal")
+
+imagem = Image.open('natal.jpg')
+imagem = imagem.resize((300, 300))  
+img_tk = ImageTk.PhotoImage(imagem)
+
+label_imagem = Label(janela, image=img_tk)
+label_imagem.pack(pady=10)
+
+nome_imagem = "Natal"
+label_nome = Label(janela, text=nome_imagem, font=("Arial", 26))
+label_nome.pack(pady=5)
+
+janela.mainloop()
