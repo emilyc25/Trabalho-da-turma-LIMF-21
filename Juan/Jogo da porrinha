@@ -1,0 +1,203 @@
+import pygame
+import random
+import sys
+
+pygame.init()
+LARGURA, ALTURA = 800, 600
+TELA = pygame.display.set_mode((LARGURA, ALTURA))
+pygame.display.set_caption("Jogo da Porrinha")
+
+VERDE_MESA = (34, 139, 34)
+BRANCO = (255, 255, 255)
+PRETO = (0, 0, 0)
+MARROM_PALITO = (205, 133, 63)
+CINZA_BOTAO = (200, 200, 200)
+CINZA_CLARO = (220, 220, 220)
+CINZA_ESCURO = (100, 100, 100) 
+VERMELHO = (200, 50, 50)
+AZUL = (50, 50, 200)
+AMARELO_DESTAQUE = (255, 255, 0)
+
+FONTE_TITULO = pygame.font.SysFont('arial', 40, bold=True)
+FONTE_TEXTO = pygame.font.SysFont('arial', 24)
+FONTE_BOTAO = pygame.font.SysFont('arial', 30, bold=True)
+
+palitos_jogador = 3
+palitos_pc = 3
+fase_jogo = "ESCOLHER_MAO" 
+msg_status = "Escolha quantos palitos vai esconder!"
+
+eu_escondo = -1
+pc_esconde = -1
+meu_palpite = -1
+pc_palpite = -1
+
+processou_resultado = False 
+texto_resultado_final = ""
+
+def desenhar_texto(texto, fonte, cor, x, y, centralizado=True):
+    img = fonte.render(texto, True, cor)
+    if centralizado:
+        rect = img.get_rect(center=(x, y))
+        TELA.blit(img, rect)
+    else:
+        TELA.blit(img, (x, y))
+
+def desenhar_botao(texto, x, y, w, h, cor_fundo, clique_soltado_no_frame, acao=None, ativo=True):
+    mouse_pos = pygame.mouse.get_pos()
+    botao_rect = pygame.Rect(x, y, w, h)
+    
+    hover = botao_rect.collidepoint(mouse_pos)
+    
+    if not ativo:
+        cor_atual = CINZA_ESCURO
+        cor_texto = CINZA_CLARO
+    else:
+        cor_atual = CINZA_CLARO if hover else cor_fundo
+        cor_texto = PRETO
+    
+    pygame.draw.rect(TELA, cor_atual, botao_rect)
+    pygame.draw.rect(TELA, PRETO, botao_rect, 2)
+    desenhar_texto(texto, FONTE_BOTAO, cor_texto, x + w/2, y + h/2)
+
+    if ativo and hover and clique_soltado_no_frame and acao is not None:
+        return acao
+    return None
+
+def desenhar_palito(x, y):
+    w, h = 10, 60
+    pygame.draw.rect(TELA, MARROM_PALITO, (x, y, w, h))
+    pygame.draw.circle(TELA, (255, 200, 200), (x + w//2, y), w//2 + 2)
+
+def desenhar_maos_fechadas():
+    pygame.draw.circle(TELA, VERMELHO, (LARGURA//2, 100), 40)
+    desenhar_texto("PC", FONTE_BOTAO, BRANCO, LARGURA//2, 100)
+    pygame.draw.circle(TELA, AZUL, (LARGURA//2, ALTURA - 100), 40)
+    desenhar_texto("VOCÊ", FONTE_BOTAO, BRANCO, LARGURA//2, ALTURA - 100)
+
+def resetar_rodada():
+    global fase_jogo, eu_escondo, pc_esconde, meu_palpite, pc_palpite, msg_status, processou_resultado
+    eu_escondo = -1
+    pc_esconde = -1
+    meu_palpite = -1
+    pc_palpite = -1
+    processou_resultado = False 
+    msg_status = "Nova Rodada! Escolha seus palitos."
+    fase_jogo = "ESCOLHER_MAO"
+
+rodando = True
+clock = pygame.time.Clock()
+
+while rodando:
+    clique_soltado = False 
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT:
+            rodando = False
+        if evento.type == pygame.MOUSEBUTTONUP:
+            if evento.button == 1: 
+                clique_soltado = True
+
+    TELA.fill(VERDE_MESA)
+    
+    desenhar_texto(f"PC: {palitos_pc} Palitos", FONTE_TEXTO, BRANCO, 100, 50)
+    desenhar_texto(f"VOCÊ: {palitos_jogador} Palitos", FONTE_TEXTO, BRANCO, 100, ALTURA - 50)
+    
+    if (palitos_jogador == 0 or palitos_pc == 0) and fase_jogo != "RESULTADO":
+        fase_jogo = "FIM"
+    
+    if fase_jogo != "FIM" and fase_jogo != "RESULTADO":
+         desenhar_texto(msg_status, FONTE_TITULO, BRANCO, LARGURA//2, ALTURA//2 - 50)
+
+
+    if fase_jogo == "ESCOLHER_MAO":
+        desenhar_maos_fechadas()
+        inicio_x = (LARGURA - ((palitos_jogador + 1) * 70)) // 2
+        for i in range(palitos_jogador + 1):
+            if desenhar_botao(str(i), inicio_x + (i * 70), ALTURA - 200, 60, 60, CINZA_BOTAO, clique_soltado, i) is not None:
+                eu_escondo = i
+                pc_esconde = random.randint(0, palitos_pc)
+                fase_jogo = "PALPITE"
+                msg_status = "Mãos fechadas! Qual a soma total?"
+
+    elif fase_jogo == "PALPITE":
+        desenhar_maos_fechadas()
+        max_mesa = palitos_jogador + palitos_pc
+        
+        largura_total_botoes = (max_mesa + 1) * 70
+        inicio_x = (LARGURA - largura_total_botoes) // 2
+        
+        for i in range(max_mesa + 1):
+            pode_apostar = (i >= eu_escondo)
+            
+            palpite_clicado = desenhar_botao(str(i), inicio_x + (i * 70), ALTURA - 200, 60, 60, CINZA_BOTAO, clique_soltado, i, ativo=pode_apostar)
+            
+            if palpite_clicado is not None:
+                meu_palpite = palpite_clicado
+                
+                min_pc = pc_esconde
+                pc_palpite = random.randint(min_pc, max_mesa)
+                
+                tentativas = 0
+                while pc_palpite == meu_palpite and tentativas < 20:
+                    pc_palpite = random.randint(min_pc, max_mesa)
+                    tentativas += 1
+                
+                fase_jogo = "RESULTADO"
+
+    elif fase_jogo == "RESULTADO":
+        soma_real = eu_escondo + pc_esconde
+
+        if not processou_resultado:
+            if meu_palpite == soma_real:
+                texto_resultado_final = "VOCÊ ACERTOU! (-1 Palito)"
+                palitos_jogador -= 1
+            elif pc_palpite == soma_real:
+                texto_resultado_final = "PC ACERTOU! (-1 Palito)"
+                palitos_pc -= 1
+            else:
+                texto_resultado_final = f"Soma: {soma_real}. Ninguém acertou."
+            processou_resultado = True 
+
+        desenhar_texto(f"PC: {pc_esconde} | Palpite: {pc_palpite}", FONTE_TEXTO, BRANCO, LARGURA//2, 150)
+        desenhar_texto(f"Você: {eu_escondo} | Palpite: {meu_palpite}", FONTE_TEXTO, BRANCO, LARGURA//2, ALTURA - 150)
+
+        largura_palitos_pc = pc_esconde * 25
+        start_x_pc = (LARGURA - largura_palitos_pc) // 2
+        for i in range(pc_esconde):
+            desenhar_palito(start_x_pc + (i*25), 220)
+            
+        largura_palitos_vc = eu_escondo * 25
+        start_x_vc = (LARGURA - largura_palitos_vc) // 2
+        for i in range(eu_escondo):
+            desenhar_palito(start_x_vc + (i*25), 300)
+
+        desenhar_texto(texto_resultado_final, FONTE_TITULO, AMARELO_DESTAQUE, LARGURA//2, ALTURA//2)
+        
+        if palitos_jogador > 0 and palitos_pc > 0:
+            if desenhar_botao("Próxima Rodada", LARGURA//2 - 100, ALTURA//2 + 80, 200, 50, BRANCO, clique_soltado, True) is not None:
+                resetar_rodada()
+        else:
+             if desenhar_botao("Ver Vencedor", LARGURA//2 - 100, ALTURA//2 + 80, 200, 50, BRANCO, clique_soltado, True) is not None:
+                 fase_jogo = "FIM"
+
+    elif fase_jogo == "FIM":
+        if palitos_jogador == 0:
+            texto_final = "PARABÉNS! VOCÊ VENCEU O JOGO!"
+            
+            cor_final = AMARELO_DESTAQUE
+        else:
+            texto_final = "GAME OVER - O COMPUTADOR VENCEU."
+            cor_final = VERMELHO
+            
+        desenhar_texto(texto_final, FONTE_TITULO, cor_final, LARGURA//2, ALTURA//2)
+        
+        if desenhar_botao("Jogar Novamente", LARGURA//2 - 100, ALTURA//2 + 80, 200, 50, BRANCO, clique_soltado, True) is not None:
+            palitos_jogador = 3
+            palitos_pc = 3
+            resetar_rodada()
+
+    pygame.display.update()
+    clock.tick(30)
+
+pygame.quit()
+sys.exit()
