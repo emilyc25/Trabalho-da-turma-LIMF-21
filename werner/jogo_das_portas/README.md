@@ -1,1 +1,2 @@
+intala o pygame
 
