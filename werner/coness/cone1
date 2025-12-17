@@ -1,0 +1,91 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider
+
+
+LIM = 20          # tamanho do espaço
+RES = 2500        # densidade dos pontos da interseção
+
+t = np.linspace(0, 2*np.pi, RES)
+
+
+fig = plt.figure(figsize=(10, 8))
+ax = fig.add_subplot(111, projection='3d')
+plt.subplots_adjust(bottom=0.28)
+
+
+r = np.linspace(0, LIM, 80)
+theta = np.linspace(0, 2*np.pi, 80)
+R, T = np.meshgrid(r, theta)
+
+Xc = R * np.cos(T)
+Yc = R * np.sin(T)
+Zc = R
+
+ax.plot_surface(Xc, Yc,  Zc, alpha=0.15, color="royalblue")
+ax.plot_surface(Xc, Yc, -Zc, alpha=0.15, color="royalblue")
+
+
+xp = np.linspace(-LIM, LIM, 30)
+yp = np.linspace(-LIM, LIM, 30)
+XP, YP = np.meshgrid(xp, yp)
+ZP = XP * 0
+
+plane = [ax.plot_surface(XP, YP, ZP, alpha=0.35, color="orange")]
+
+
+points = ax.scatter([], [], [], s=4, color="crimson")
+
+
+ax.set_xlim(-LIM, LIM)
+ax.set_ylim(-LIM, LIM)
+ax.set_zlim(-LIM, LIM)
+ax.set_box_aspect([1, 1, 1])
+ax.set_title("Seções Cônicas — Interseção Plano × Cone", fontsize=14)
+
+
+ax_ang = plt.axes([0.2, 0.16, 0.6, 0.03])
+ax_h   = plt.axes([0.2, 0.10, 0.6, 0.03])
+
+s_ang = Slider(ax_ang, "Inclinação do plano (°)", 0, 90, valinit=30)
+s_h   = Slider(ax_h,   "Altura do plano", -6, 6, valinit=1)
+
+
+def update(val):
+    ang = np.deg2rad(s_ang.val)
+    h   = s_h.val
+
+    
+    nx = np.sin(ang)
+    nz = np.cos(ang)
+
+    # ---------- INTERSEÇÃO ----------
+    denom = nx*np.cos(t) + nz
+    mask = np.abs(denom) > 0.02
+
+    r_int = h / denom[mask]
+
+    x = r_int * np.cos(t[mask])
+    y = r_int * np.sin(t[mask])
+    z = r_int
+
+    points._offsets3d = (x, y, z)
+
+    
+    if abs(nz) > 0.01:
+        ZP_new = (h - nx * XP) / nz
+    else:
+       
+        ZP_new = XP * 0
+
+    plane[0].remove()
+    plane[0] = ax.plot_surface(XP, YP, ZP_new, alpha=0.35, color="orange")
+
+    fig.canvas.draw_idle()
+
+s_ang.on_changed(update)
+s_h.on_changed(update)
+
+
+update(None)
+plt.show()
