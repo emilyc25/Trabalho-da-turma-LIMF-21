@@ -20,4 +20,5 @@ while True:
     
     valores.append(entrada)
 
+
 print(f"Você digitou {len(valores)} valores:", valores)
